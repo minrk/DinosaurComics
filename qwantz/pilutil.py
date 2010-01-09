@@ -1,5 +1,6 @@
 # Functions which need the PIL
-
+# this is ripped from scipy.misc, which is BSD licensed
+# see scipy at http://scipy.org
 import numpy
 import tempfile
 

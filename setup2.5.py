@@ -46,6 +46,7 @@ if os.path.isfile(bootfile):
     lines = ["import sys, os,site",
             "sys.path.insert(0,os.path.join(os.environ['RESOURCEPATH'], 'lib', 'python%s'%(sys.version[:3]), 'lib-dynload'))",
             "site.addsitedir(os.path.join(os.environ['RESOURCEPATH'], 'lib', 'python%s'%(sys.version[:3])))",
+            "site.addsitedir(os.path.join(os.environ['RESOURCEPATH'], 'lib', 'python%s'%(sys.version[:3]),'site-packages.zip' ))",
             "site.addsitedir('/System/Library/Frameworks/Python.framework/Versions/%s/Extras/lib/python'%(sys.version[:3]))",
             "print sys.path",
             tail]

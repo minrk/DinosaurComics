@@ -1,4 +1,8 @@
 #!/usr/bin/python
+# try:
+from __future__ import with_statement # for python2.5
+# except:
+    # pass
 import os,httplib,re,time
 from sys import stderr
 from urllib import FancyURLopener
