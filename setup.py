@@ -20,7 +20,7 @@ OPTIONS = dict(
         CFBundleName               = "DinosaurComics",
         CFBundleShortVersionString = "0.2.0",     # must be in X.X.X format
         CFBundleGetInfoString      = "DinosaurComics 0.2.0",
-        CFBundleExecutable         = "DinosaurComics",
+        CFBundleExecutable         = "launch",
         CFBundleIdentifier         = "net.minrk.dinocomics",
     )
 )
@@ -37,15 +37,16 @@ pjoin = os.path.join
 pyver = sys.version.split()[0][:3]
 Contents=pjoin("./dist",OPTIONS['plist']['CFBundleName']+'.app','Contents')
 bootfile = pjoin(Contents,"Resources","__boot__.py")
-if os.path.isfile(bootfile):
+if False and os.path.isfile(bootfile): # don't do this anymore
     print "patching bootfile"
     f = open(bootfile)
     tail = f.read()
-    s = "import sys,os\nsys.path.insert(0,os.path.join(os.environ['RESOURCEPATH'], 'lib', 'python%s'%(sys.version[:3]), 'lib-dynload'))\nprint sys.path\n"+f.read()
     f.close()
     lines = ["import sys, os,site",
             "sys.path.insert(0,os.path.join(os.environ['RESOURCEPATH'], 'lib', 'python%s'%(sys.version[:3]), 'lib-dynload'))",
             "site.addsitedir(os.path.join(os.environ['RESOURCEPATH'], 'lib', 'python%s'%(sys.version[:3])))",
+            "site.addsitedir(os.path.join(os.environ['RESOURCEPATH'], 'lib', 'python%s'%(sys.version[:3]), 'site-packages'))",
+            "site.addsitedir(os.path.join(os.environ['RESOURCEPATH'], 'lib', 'python%s'%(sys.version[:3]), 'site-packages.zip'))",
             "site.addsitedir('/System/Library/Frameworks/Python.framework/Versions/%s/Extras/lib/python'%(sys.version[:3]))",
             "print sys.path",
             tail]
@@ -56,7 +57,7 @@ if os.path.isfile(bootfile):
 # cleanup incorrect includes:
 
 site=pjoin(Contents, "Resources/lib/python%s"%pyver)
-for subdir in "numpy scipy wx".split():
+for subdir in "numpy scipy".split():
     pass
     if os.path.exists(pjoin(site, subdir)):
         shutil.rmtree(pjoin(site, subdir))
@@ -65,6 +66,14 @@ print "stripping unneeded libs"
 for lib in glob.glob(pjoin(Contents, "Frameworks","libg*")):
     # pass
     os.remove(lib)
+
+print "replacing executable and _imaging.so"
+shutil.copyfile("_imaging.lite.so", pjoin(Contents, "Resources/lib/python%s/lib-dynload/_imaging.so"%pyver))
+shutil.copyfile("load", pjoin(Contents, "MacOS/"))
+# putting DYLD_LIBARY_PATH in plist
+# import plistlib
+# plist = plistlib.Parse(pjoin(Contents, 'Info.plist'))
+# plist['LSEnvironment'] = dict(DYLD_LIBRARY_PATH=@executable)
 
 print "forcing 32-bit python:"
 target = pjoin(Contents, "MacOS", OPTIONS['plist']['CFBundleExecutable'])

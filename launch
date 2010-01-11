@@ -1,0 +1,15 @@
+#!/usr/bin/env python2.5
+import os,sys, site
+import wx # check 32-bit Python
+contents = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+resources = os.path.join(contents, "Resources")
+os.environ["RESOURCEPATH"]=resources
+sys.path.insert(0,os.path.join(resources, 'lib', 'python%s'%(sys.version[:3]), 'lib-dynload'))
+site.addsitedir(os.path.join(resources, 'lib', 'python%s'%(sys.version[:3])))
+site.addsitedir(os.path.join(resources, 'lib', 'python%s'%(sys.version[:3]), 'site-packages'))
+# site.addsitedir(os.path.join(resources, 'lib', 'python%s'%(sys.version[:3]), 'site-packages.zip'))
+site.addsitedir('/System/Library/Frameworks/Python.framework/Versions/%s/Extras/lib/python'%(sys.version[:3]))
+# print sys.path
+
+execfile(os.path.join(resources, "__boot__.py"))
